@@ -17,7 +17,7 @@ INFRAESTRUCTURE_USER_ACTION_PASSWORD
 INFRAESTRUCTURE_USER_ACTION_USERNAME
 INFRAESTRUCTURE_USER_ACTION_PRIVATE_KEY
 
-Tags     Instancias
+Tags      Instancias
          ecs-wind-001 - ecs-registry
 test     ecs-wind-002 - ecs-SportTest
          ecs-wind-003 - ecs-MySQL-0001
@@ -26,3 +26,4 @@ prod     ecs-wind-005 - ecs-PageWind
          ecs-wind-006 - ecs-RTWind
 prod     ecs-wind-007 - ecs-CRMWind
 stagging ecs-wind-008 - ecs-SistgoWind
+otro
