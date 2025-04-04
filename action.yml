@@ -1,0 +1,40 @@
+name: 'Infrastructure User Action'
+description: 'Creates infrastructure users and extracts output values'
+author: 'Your Organization'
+
+inputs:
+  domain:
+    description: 'Target domain (e.g., un.nuevo.dominio.com)'
+    required: true
+  instance:
+    description: 'Instance ID (e.g., 67200dac0502f3ba600968ce)'
+    required: true
+  alternativeName:
+    description: 'Alternative name (e.g., alternativo-com)'
+    required: false
+runs:
+  using: 'composite'
+  steps:
+    - name: Execute and process output
+      shell: bash
+      id: extract_data
+      run: |
+        # Ejecutar el binario y capturar la salida JSON
+        BINARY_PATH="$GITHUB_ACTION_PATH/bin/infraestructure-user-action"
+        OUTPUT=$("$BINARY_PATH" -domain "${{ inputs.domain }}" -instance "${{ inputs.instance }}" ${{ inputs.alternativeName && format('-alternativeName {0}', inputs.alternativeName) }})
+        
+        # Validar que la salida sea un JSON válido
+        if ! echo "$OUTPUT" | jq empty > /dev/null 2>&1; then
+          echo "Error: La salida no es un JSON válido. Salida obtenida: $OUTPUT"
+          exit 1
+        fi
+
+        # Extraer valores usando jq
+        echo "INFRAESTRUCTURE_USER_ACTION_USER_ID=$(echo "$OUTPUT" | jq -r '.data.user._id')" >> $GITHUB_ENV
+        echo "INFRAESTRUCTURE_USER_ACTION_INSTANCE_ID=$(echo "$OUTPUT" | jq -r '.data.user.instance._id')" >> $GITHUB_ENV
+        echo "INFRAESTRUCTURE_USER_ACTION_PASSWORD=$(echo "$OUTPUT" | jq -r '.data.user.password')" >> $GITHUB_ENV
+        echo "INFRAESTRUCTURE_USER_ACTION_USERNAME=$(echo "$OUTPUT" | jq -r '.data.user.user')" >> $GITHUB_ENV
+        echo "INFRAESTRUCTURE_USER_ACTION_PRIVATE_KEY<<EOF" >> $GITHUB_ENV
+        echo "$(echo "$OUTPUT" | jq -r '.data.user.key')" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+    
