@@ -1,0 +1,28 @@
+name: Create Infrastructure User
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: 'mi.nuevo.dominio.com'
+        required: true
+      instance_id:
+        description: '67ec193a520b3c604340dab8'
+        required: true
+
+jobs:
+  create-user:
+    runs-on: [self-hosted, linux]  # Usa tus runners específicos
+    steps:
+      - name: Run Windconsul internal action
+        uses: windconsul/infraestructure-user-action@main  # Puedes usar branch, tag o commit
+        id: create_user
+        with:
+          domain: ${{ inputs.domain }}
+          instance: ${{ inputs.instance_id }}
+          
+      - name: Show user info
+        run: |
+          echo "User created successfully:"
+          echo "Username: ${{ steps.create_user.outputs.username }}"
+          echo "User ID: ${{ steps.create_user.outputs.user_id }}"
+          echo "Password: ${{ steps.create_user.outputs.password }}"
